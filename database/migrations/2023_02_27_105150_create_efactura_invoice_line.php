@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('Cantitate_facturata')->nullable();
             $table->string('UM')->nullable();
             $table->string('Codul_categoriei_de_TVA')->nullable();
-            $table->string('Cota_de_TVA')->nullable();
+            $table->string('Cota_de_TVA')->nullable(); 
             $table->string('Valoarea_neta_a_liniei')->nullable();
 
             $table->string('Informatii_suplimentare_Descriere_articol')->nullable();

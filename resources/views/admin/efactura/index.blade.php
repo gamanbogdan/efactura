@@ -1,12 +1,21 @@
 @extends('admin.main-layout')
 
 
+
+
 @section('css')
-  <!-- DataTables -->
-  <link rel="stylesheet" href="{{ asset('/admin-assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('/admin-assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
-  <link rel="stylesheet" href="{{ asset('/admin-assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css') }}">
+
+<!-- <meta name="csrf-token" content="{{ csrf_token() }}">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" >
+-->
+
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" >
+<link  href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" rel="stylesheet">
+
 @endsection
+
+
+
 
 @section('content-header')
     <!-- Content Header (Page header) -->
@@ -30,155 +39,162 @@
 
 
 
+
+
+
 @section('body')
 
+    <div class="row">
 
 
-<div class="row">
+        <!-- ./col -->
+        <div class="col-lg-6 col-12">
+
+            @if ($message = Session::get('success'))
+                <div class="text-success">
+                    <strong>{{ $message }}</strong>
+                </div>
+            @endif
 
 
-  <!-- ./col -->
-  <div class="col-lg-6 col-12">
+            @if (count($errors) > 0)
+                <div class="text-danger">
 
-    @if ($message = Session::get('success'))
-        <div class="text-success">
-            <strong>{{ $message }}</strong>
+                        @foreach ($errors->all() as $error)
+                        {{ $error }}
+                        @endforeach
+
+                </div>
+            @endif
         </div>
-      @endif
 
 
-      @if (count($errors) > 0)
-        <div class="text-danger">
-
-                @foreach ($errors->all() as $error)
-                  {{ $error }}
-                @endforeach
-
-        </div>
-      @endif
-
-
-
-
-  </div>
-
-
-  <!-- ./col -->
-  <div class="col-lg-6 col-12 ">
-    
-  <form action="{{route('efactura.upload')}}" method="post" enctype="multipart/form-data" >
-          @csrf
-
-          <div class="row mb-2" >
+        <!-- ./col -->
+        <div class="col-lg-6 col-12 ">
             
-            <div class="col">
-              <label class="custom-file-label" for="chooseFile">Selecteaza fisier...</label>
-              <input type="file" name="zip" class="custom-file-input" id="chooseFile" >
-            </div>  
+                <form action="{{route('efactura.upload')}}" method="post" enctype="multipart/form-data" >
+                @csrf
 
-            <div class="col">
-              <button type="submit" name="submit" class="btn btn-primary btn-block">
-                  Incarca zip
-              </button>
-            </div>
-                
-          </div>
-      </form>
-
-
-
-  </div>  
-</div>
-
-
-
-  <div class="card">
-    <div class="card-header"><h3 class="card-title">Lista facturi</h3></div>
-      <!-- /.card-header -->
-    <div class="card-body">
-
-
-          @if(count($invoices) > 0 )
-                  <table id="example1" class="table table-bordered table-striped">
-                    <thead>
-
-                    
-                    <tr>
-                      <th>Id</th>   
-                      <th>Nr. factura</th>                                        
-                      <th>Vanzator</th>
-                      <th>Cumparator</th>
-                      <th>Suma</th>
-                      <th>Actiuni</th>
-
-                    </tr>
-                    </thead>
-
-                    @foreach ($invoices as $invoice)
-                    <tbody>
-                    <tr>
-                      <td>{{ $invoice->id }}</td>
-                      <td>{{ $invoice->Informatii_factura_Nr_factura }}</td>
-                      <td>{{ $invoice->Vanzator_Nume }}</td>
-                      <td>{{ $invoice->Cumparator_Nume }}</td>
-                      <td>{{ $invoice->Totalurile_documentului_Suma_de_plata }}</td>
-                      <td>
-                        <a href="{{ route('efactura.info', $invoice->id ) }}" class="btn btn-primary" > Vezi factura </a>
+                    <div class="row mb-2" >
                         
-                      </td>
-                      
-                    </tr>
-                    @endforeach
+                        <div class="col">
+                        <label class="custom-file-label" for="chooseFile">Selecteaza fisier...</label>
+                        <input type="file" name="zip" class="custom-file-input" id="chooseFile" >
+                        </div>  
 
-                    </tbody>
-                    <tfoot>
-                    <tr>
-                    <th>Id</th>   
-                      <th>Nr. factura</th>                                        
-                      <th>Vanzator</th>
-                      <th>Cumparator</th>
-                      <th>Suma</th>
-                      <th>Actiuni</th>
+                        <div class="col">
+                        <button type="submit" name="submit" class="btn btn-primary btn-block">
+                            Incarca zip
+                        </button>
+                        </div>
+                            
+                    </div>
+            </form>
 
-                    </tr>
-                    </tfoot>
-                  </table>
-                  @else
-                  <p>No file found</p>
-                  @endif
-
-
-    </div>
-  
-  </div>
-
-</div>
+        </div>  
+    </div>   
 
   <!-- /.row (main row) -->
+
+
+
+
+
+    <!-- /.row -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                <h3 class="card-title">Fixed Header Table</h3>
+
+
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body table-responsive p-3" >
+                    <table  id="efactura-datatable" class="table table-head-fixed ">
+                        <thead>
+                            <tr>
+                                <th>Crt.</th>
+                                <th>Nr. factura</th>
+                                <th>Vanzator</th>
+                                <th>Cumparator</th>
+                                <th>Suma <br> plata</th>
+                                <th>Incarcare <br> anaf</th>
+                                
+                                <th width="8%">Action</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+        </div>
+    </div>
+    <!-- /.row -->
+
 @endsection
+
+
 
 
 @section('js')
-<!-- DataTables  & Plugins -->
-<script src="{{ asset('/admin-assets/plugins/datatables/jquery.dataTables.min.js') }}"></script>
-<script src="{{ asset('/admin-assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('/admin-assets/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
-<script src="{{ asset('/admin-assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('/admin-assets/plugins/datatables-buttons/js/dataTables.buttons.min.js') }}"></script>
-<script src="{{ asset('/admin-assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js') }}"></script>
-<script src="{{ asset('/admin-assets/plugins/jszip/jszip.min.js') }}"></script>
-<script src="{{ asset('/admin-assets/plugins/pdfmake/pdfmake.min.js') }}"></script>
-<script src="{{ asset('/admin-assets/plugins/pdfmake/vfs_fonts.js') }}"></script>
-<script src="{{ asset('/admin-assets/plugins/datatables-buttons/js/buttons.html5.min.js') }}"></script>
-<script src="{{ asset('/admin-assets/plugins/datatables-buttons/js/buttons.print.min.js') }}"></script>
-<script src="{{ asset('/admin-assets/plugins/datatables-buttons/js/buttons.colVis.min.js') }}"></script>
 
-<script src="{{ asset('/admin-assets/js/efactura-upload.js') }}"></script>
+<!-- <meta name="csrf-token" content="{{ csrf_token() }}">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" >
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<link  href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script> -->
+
+
+
+
+
+
+    <script src="{{ asset('/admin-assets/plugins/datatables/jquery.dataTables.min.js') }}"></script>
+    <script src="{{ asset('/admin-assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
+    <script src="{{ asset('/admin-assets/plugins/datatables-responsive/js/dataTables.responsive.min.js') }}"></script>
+    <script src="{{ asset('/admin-assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
+
+
+
+
+
+
+
+
+<script src="{{ asset('/admin-assets/js/efactura.js') }}"></script>
+
+<script>
+
+$(document).ready( function () {
+    $.ajaxSetup({
+        headers: {
+        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
+    $('#efactura-datatable').DataTable({
+        processing: true,
+        serverSide: true,
+        stateSave: true,
+        ajax: "{{ url('/admin/efactura-index') }}",
+        columns: [
+            { data: 'id', name: 'id' },
+            { data: 'Nr_factura', name: 'Nr_factura' },
+            { data: 'Vanzator_Nume', name: 'Vanzator_Nume' },
+            { data: 'Cumparator_Nume', name: 'Cumparator_Nume' },
+            { data: 'Totalurile_documentului_Suma_de_plata', name: 'Suma' },
+            { data: 'Date_created_anaf', name: 'Date created anaf' },
+            
+            { data: 'action', name: 'action', orderable: false },
+        ],
+        order: [[0, 'desc']]
+    });
+
+});
+</script>
+
+
+
 @endsection
-
-
-
-
-
-
-

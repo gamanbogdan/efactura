@@ -28,9 +28,10 @@ Route::get('/admin/dashboard', [ProfileController::class, 'dashboard'])->name('d
 Route::get('/admin/logout', [ProfileController::class, 'logout'])->name('logout');
 
 Route::get('/admin/efactura-index', [EfacturaController::class, 'index'])->name('efactura.index');
-Route::get('/admin/efactura-upload-list', [EfacturaController::class, 'upload_list'])->name('efactura.upload.list');
 
-Route::get('/admin/efactura-info/{id}', [EfacturaController::class, 'info'])->name('efactura.info');
+Route::get('/admin/efactura-detail-invoice/{id}', [EfacturaController::class, 'detail_invoice'])->name('efactura.detail');
+Route::get('/admin/pdf_anaf/{id}', [EfacturaController::class, 'pdf_anaf'])->name('efactura.pdf_anaf');
+Route::get('/admin/fact/{factura}', [EfacturaController::class, 'show'])->name('efactura.show');
 
 
 Route::post('/admin/efactura-upload', [EfacturaController::class, 'upload'])->name('efactura.upload');

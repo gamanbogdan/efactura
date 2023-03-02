@@ -31,7 +31,7 @@ class AuthController extends Controller
 
 
         if ($validated) {
-            return redirect()->route('dashboard')->with('success', 'Login successfull');
+            return redirect()->route('efactura.index')->with('success', 'Login successfull');
 
         } 
 

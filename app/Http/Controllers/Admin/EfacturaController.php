@@ -15,7 +15,7 @@ use App\Models\EfacturaInvoiceLineCommodityClassification;
 
 
 
-
+use Datatables;
 
 use Illuminate\Support\Facades\Storage;
 
@@ -51,19 +51,40 @@ class EfacturaController extends Controller
 
     public function index() {
        
-        $invoices = EfacturaInvoice::all();
 
-        $data = ['title'=> 'Efactura', 'invoices' => $invoices];
-        return view('admin.efactura.index', $data);
+        if(request()->ajax()) 
+        {
+
+            $data = EfacturaInvoice::all();
+
+            return datatables()->of($data)
+            ->addColumn('Nr_factura',function($row){
+                
+                return '<a href="'.route('efactura.show', $row->id).'"> '.$row->Informatii_factura_Nr_factura .' </a>';
+                
+            })
+
+
+            ->addColumn('Date_created_anaf',function($row){
+                
+                return date('d-m-Y', strtotime($row->EfacturaInvoicePath->date_created_anaf)) ;
+                
+            })
+
+            
+            ->addColumn('action', function($row){ 
+                
+                $actionBtn = '<a href="'.route('efactura.detail', $row->id).'" class="delete btn btn-danger btn-sm "> FCN </a>';
+                return $actionBtn;
+            })
+            ->rawColumns(['Nr_factura', 'Date_created_anaf', 'action'])
+            ->addIndexColumn()
+            ->make(true);
+        }
+
+        return view('admin.efactura.index');
     } 
 
-    public function upload_list() {
-       
-        $upload_files = EfacturaZipPath::all();
-
-        $data = ['title'=> 'Efactura list upload files', 'upload_files' => $upload_files];
-        return view('admin.efactura.upload_list', $data);
-    } 
 
 
 
@@ -128,9 +149,12 @@ class EfacturaController extends Controller
 
                             $invoicePathModel = new EfacturaInvoicePath;       
                             $invoicePathModel->file_upload_id = $id_zip_upload;
+                            
                             $invoicePathModel->zip_name = $file_info['filename'];
                             $invoicePathModel->xml_name = $xml_number;
                             $invoicePathModel->xml_path = $data_factura. '/'.$file_info['filename'].'/'.$xml_basename;
+                            $invoicePathModel->created_at_anaf = $data_factura;
+                            $invoicePathModel->date_created_anaf = date('Y-m-d', strtotime($data_factura)); 
                             $invoicePathModel->save();
                             $id_invoicePathModel = $invoicePathModel->id;
 
@@ -486,41 +510,36 @@ class EfacturaController extends Controller
         return $fileModel->id;
     }
 
-    public function info($id) {
+ 
+
+    public function pdf_anaf($id) {
+
                        
         $invoice_obj = EfacturaInvoicePath::find($id);
-        $xmlfile = file_get_contents($this->storageDestinationPathUnzip. $invoice_obj->xml_path);
-        
+        $path_pdf = $this->storageDestinationPathZip.$invoice_obj->created_at_anaf;
 
+        $dh  = opendir($path_pdf);
+        while (false !== ($fileName = readdir($dh))) {
+            $prefix = substr($fileName, 0, 10);
+            
+            $ext = substr($fileName, strrpos($fileName, '.') + 1);
+            if(in_array($ext, array("pdf")))
+                $a[] = $prefix; 
+                if ($prefix == $invoice_obj->xml_name ) {
+                    
+                    $files1 = $fileName;
+                }
 
-        @$sxe = simplexml_load_string($xmlfile);
-        
-        @$namespaces = $sxe->getDocNamespaces();
-
-        if (isset($namespaces['cbc']) and isset($namespaces['cac'])) {
-        
-            $sxe->registerXPathNamespace('cbc', $namespaces['cbc']);
-            $cbc = $sxe->children($namespaces['cbc']);
-
-            $sxe->registerXPathNamespace('cac', $namespaces['cac']);
-            $cac = $sxe->children($namespaces['cac']);
         }
+        closedir($dh);
 
-        else {
-            $sxe->registerXPathNamespace('cbc', "urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2");
-            $cbc = $sxe->children("urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2");
-    
-            $sxe->registerXPathNamespace('cac', "urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2");
-            $cac = $sxe->children("urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2");
-        }
+        return response()->file($this->storageDestinationPathZip.$invoice_obj->created_at_anaf.'/'. $files1);
 
-
-        $data = ['title'=> 'Efactura', 'invoice' => $invoice];
-        return view('admin.efactura.info_invoice_details', $data);
+        
         
     }
 
-
+    
 
     private function get_initial_details_from_xml($xml_path) {
         
@@ -1507,6 +1526,27 @@ class EfacturaController extends Controller
         
         
         
+    }
+
+
+
+
+
+
+    public function detail_invoice($id) {
+                       
+        $invoice_obj = EfacturaInvoice::find($id);
+        
+
+        $data = ['title'=> 'Efactura', 'invoice' => $invoice_obj];
+        return view('admin.efactura.info_invoice_details', $data);
+        
+    }
+
+    public function show(EfacturaInvoice $factura)
+    {
+        //return $factura;
+        return view('admin.efactura.show', compact('factura'));
     }
 
 

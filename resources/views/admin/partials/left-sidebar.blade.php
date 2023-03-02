@@ -41,44 +41,18 @@ $current_route = request()->route()->getName();
                with font-awesome or any other icon font library -->
 
 
-          <li class="nav-item">
-            <a href="{{ route('dashboard') }}" class="nav-link
-            {{ $current_route=='dashboard'?'active':'' }}
-            ">
-              <i class="nav-icon fas fa-tachometer-alt"></i>
-              <p>
-                Dashboard
-              </p>
-            </a>
-          </li>
+
 
 
           <li class="nav-item  {{ in_array($current_route, ['efactura.index', 'upload.list']) ?'menu-open':'' }}">
-            <a href="#" class="nav-link {{ $current_route=='efactura.index'?'active':'' }}">
+            <a href="{{ route('efactura.index') }}" class="nav-link {{ $current_route=='efactura.index'?'active':'' }}">
               <i class="nav-icon fas fa-file-invoice"></i>
               <p>
                 Efactura
-                <i class="right fas fa-angle-left"></i>
+                
               </p>
             </a>
-            <ul class="nav nav-treeview">
-              <li class="nav-item">
-                <a href="{{ route('efactura.index') }}" class="nav-link 
-                {{ $current_route=='efactura.index'?'active':'' }}">
-                  <i class="fas fa-file-archive"></i>
-                  <p>Incarca zip</p>
-                </a>
-              </li>
 
-              <li class="nav-item">
-                <a href="{{ route('efactura.upload.list') }}" class="nav-link 
-                {{ $current_route=='efactura.upload.list'?'active':'' }}">
-                  <i class="fas fa-file-archive"></i>
-                  <p>List upload</p>
-                </a>
-              </li>
-
-            </ul>
           </li>
 
 

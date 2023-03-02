@@ -197,6 +197,9 @@ return [
 
 
         Orchestra\Parser\XmlServiceProvider::class,
+
+
+        Yajra\Datatables\DatatablesServiceProvider::class,
        
     ],
 
@@ -213,6 +216,7 @@ return [
 
     'aliases' => Facade::defaultAliases()->merge([
         'XmlParser' => Orchestra\Parser\Xml\Facade::class,
+        'Datatables' => Yajra\Datatables\Facades\Datatables::class,
         // 'ExampleClass' => App\Example\ExampleClass::class,
     ])->toArray(),
 

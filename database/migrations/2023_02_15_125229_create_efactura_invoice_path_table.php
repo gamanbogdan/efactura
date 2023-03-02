@@ -14,9 +14,12 @@ return new class extends Migration
         Schema::create('efactura_invoice_path', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('file_upload_id')->unsigned(); 
+            
             $table->string('zip_name')->nullable();
             $table->string('xml_name')->nullable(); 
             $table->string('xml_path')->nullable();
+            $table->date('date_created_anaf');
+            $table->string('created_at_anaf')->nullable();
             $table->timestamps();
 
 

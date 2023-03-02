@@ -12,11 +12,18 @@ class EfacturaInvoicePath extends Model
 
     protected $table='efactura_invoice_path';
 
+
+    protected $dates = [
+        'date_created_anaf',
+    ];
+
     protected $fillable = [
         'file_upload_id',
         'zip_name',
         'xml_name',
-        'xml_path'
+        'xml_path',
+        'date_created_anaf',
+        'created_at_anaf',
     ];
 
 
