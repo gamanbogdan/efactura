@@ -12,6 +12,10 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" >
 <link  href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css" rel="stylesheet">
 
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.css" />
+    
+
 @endsection
 
 
@@ -23,7 +27,7 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Dashboard</h1>
+            <h1 class="m-0">Efactura</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
@@ -105,12 +109,36 @@
         <div class="col-12">
             <div class="card">
                 <div class="card-header">
-                <h3 class="card-title">Fixed Header Table</h3>
+                <h3 class="card-title">Lista facturi</h3>
+
+                <div class="row input-daterange float-right">
+                    <div class="col-3 mb-0 ">
+                        Incarcate ANAF
+                    </div>
+                    <div class="col-3">
+                        <input type="text" name="from_date" id="from_date" class="form-control" placeholder="De la" readonly />
+                    </div>
+                    <div class="col-3">
+                        <input type="text" name="to_date" id="to_date" class="form-control" placeholder="Pana la" readonly />
+                    </div>
+                    <div class="col">
+                        <button type="button" name="filter" id="filter" class="btn btn-primary">Filter</button>
+                        <button type="button" name="refresh" id="refresh" class="btn btn-default">Refresh</button>
+                    </div>
+                </div>
+
 
 
                 </div>
                 <!-- /.card-header -->
-                <div class="card-body table-responsive p-3" >
+                <div class="card-body table-responsive" >
+
+
+
+                    
+
+
+
                     <table  id="efactura-datatable" class="table table-head-fixed ">
                         <thead>
                             <tr>
@@ -157,40 +185,75 @@
     <script src="{{ asset('/admin-assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js') }}"></script>
 
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.js"></script>
 
 
 
+    <script src="{{ asset('/admin-assets/js/efactura.js') }}"></script>
 
 
-
-<script src="{{ asset('/admin-assets/js/efactura.js') }}"></script>
 
 <script>
 
 $(document).ready( function () {
+
     $.ajaxSetup({
         headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
         }
     });
 
-    $('#efactura-datatable').DataTable({
-        processing: true,
-        serverSide: true,
-        stateSave: true,
-        ajax: "{{ url('/admin/efactura-index') }}",
-        columns: [
-            { data: 'id', name: 'id' },
-            { data: 'Nr_factura', name: 'Nr_factura' },
-            { data: 'Vanzator_Nume', name: 'Vanzator_Nume' },
-            { data: 'Cumparator_Nume', name: 'Cumparator_Nume' },
-            { data: 'Totalurile_documentului_Suma_de_plata', name: 'Suma' },
-            { data: 'Date_created_anaf', name: 'Date created anaf' },
-            
-            { data: 'action', name: 'action', orderable: false },
-        ],
-        order: [[0, 'desc']]
+    $('.input-daterange').datepicker({
+            todayBtn:'linked',
+            format:'yyyy-mm-dd',
+            autoclose:true
     });
+
+    load_data();
+    function load_data(from_date = '', to_date = ''){
+        $('#efactura-datatable').DataTable({
+            processing: true,
+            serverSide: true,
+            stateSave: true,
+            ajax: {
+                url: "{{ url('/admin/efactura') }}",
+                data: {from_date:from_date, to_date:to_date}
+            },
+            columns: [
+                { data: 'id', name: 'id' },
+                { data: 'Nr_factura', name: 'Nr_factura' },
+                { data: 'Vanzator_Nume', name: 'Vanzator_Nume' },
+                { data: 'Cumparator_Nume', name: 'Cumparator_Nume' },
+                { data: 'Totalurile_documentului_Suma_de_plata', name: 'Suma' },
+                { data: 'Date_created_anaf', name: 'Date created anaf' },
+                
+                { data: 'action', name: 'action', orderable: false },
+            ],
+            order: [[0, 'desc']]
+        });
+    }
+
+    $('#filter').click(function(){
+        var from_date = $('#from_date').val();
+        var to_date = $('#to_date').val();
+
+        if(from_date != '' &&  to_date != ''){
+            $('#efactura-datatable').DataTable().destroy();
+            load_data(from_date, to_date);
+        } else{
+            alert('Both Date is required');
+        }
+
+    });
+
+    $('#refresh').click(function(){
+        $('#from_date').val('');
+        $('#to_date').val('');
+        $('#efactura-datatable').DataTable().destroy();
+        load_data();
+    });
+
+
 
 });
 </script>
@@ -198,3 +261,4 @@ $(document).ready( function () {
 
 
 @endsection
+

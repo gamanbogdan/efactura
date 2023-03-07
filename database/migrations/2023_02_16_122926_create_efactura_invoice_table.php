@@ -17,7 +17,7 @@ return new class extends Migration
 
             $table->unsignedBigInteger('invoice_path_id')->unsigned(); 
 
-
+            $table->date('created_anaf');
             ///////////////////////////////////////////////
             // INFORMATII FACTURA /////////////////////////
             ///////////////////////////////////////////////
@@ -482,8 +482,11 @@ return new class extends Migration
             $table->string('Totaluri_tva_Codul_monedei')->nullable();
 
 
-
-
+            /////////////////////////////////////////////////
+            // FCN REMARKS //////////////////////////////////
+            /////////////////////////////////////////////////            
+            $table->boolean('is_fcn')->default(false);
+            $table->string('comment_fcn')->nullable();
 
             $table->timestamps();
 

@@ -47,15 +47,23 @@ class EfacturaController extends Controller
             \File::makeDirectory($this->storageDestinationPathZip, 0755, true);
         }
     }
-
-
-    public function index() {
+    ////////////////////////////////////////////////
+    // AFISARE SI LISTARE //////////////////////////
+    ////////////////////////////////////////////////
+    public function index(Request $request) {
        
-
         if(request()->ajax()) 
         {
 
-            $data = EfacturaInvoice::all();
+
+            if(!empty($request->from_date)) {
+
+                $data = EfacturaInvoice::whereBetween('created_anaf', [$request->from_date, $request->to_date])->get();
+            }
+
+            else {
+                $data = EfacturaInvoice::all();
+            }
 
             return datatables()->of($data)
             ->addColumn('Nr_factura',function($row){
@@ -63,19 +71,17 @@ class EfacturaController extends Controller
                 return '<a href="'.route('efactura.show', $row->id).'"> '.$row->Informatii_factura_Nr_factura .' </a>';
                 
             })
-
-
             ->addColumn('Date_created_anaf',function($row){
                 
                 return date('d-m-Y', strtotime($row->EfacturaInvoicePath->date_created_anaf)) ;
                 
-            })
-
-            
+            })          
             ->addColumn('action', function($row){ 
-                
-                $actionBtn = '<a href="'.route('efactura.detail', $row->id).'" class="delete btn btn-danger btn-sm "> FCN </a>';
-                return $actionBtn;
+                $is_fcn = "";
+                if($row->is_fcn) {
+                    $is_fcn = '<p class="text-success"> FCN </p>';
+                }
+                return $is_fcn;
             })
             ->rawColumns(['Nr_factura', 'Date_created_anaf', 'action'])
             ->addIndexColumn()
@@ -86,7 +92,34 @@ class EfacturaController extends Controller
     } 
 
 
+    ///////////////////////////////////////
+    // AFISAM  FACTURA ////////////////////
+    ///////////////////////////////////////
 
+    public function show(EfacturaInvoice $factura)
+    {
+        return view('admin.efactura.show', compact('factura'));
+    }
+
+
+
+    ///////////////////////////////////////
+    // UPDATE /////////////////////////////
+    ///////////////////////////////////////
+    public function update(Request $request, EfacturaInvoice $factura)
+        {
+        /*
+        $request->validate([
+        'comment_fcn' => 'required',
+        ]);
+        */
+
+        
+        $factura->comment_fcn = $request->comment_fcn;
+        $factura->is_fcn = ($request->is_fcn==1)?1:0;
+        $factura->save();
+        return redirect()->route('efactura.show', $factura->id)->with('status','Editare reusita');      
+    }
 
     public function upload(Request $request) {
 
@@ -112,15 +145,29 @@ class EfacturaController extends Controller
 
                 try {
 
-                    // salvez fisierul pe disc si in db
-                    $id_zip_upload = $this->save_file_upload($request);
-                
-                    $zip->extractTo($this->storageDestinationPathZip);
+                    // salvez fisierul zip pe disc si in db
+                    $time_for_path = time();
+
+                    $fileModel = new EfacturaZipPath;
+                    $zipName = $time_for_path.'_'.$request->zip->getClientOriginalName();
+                    $filePath = $request->file('zip')->storeAs('efactura/upload', $zipName);
+                    $fileModel->user_id = auth()->user()->id;
+                    $fileModel->file_name = $zipName;
+                    $fileModel->file_path = '/storage/' . $filePath;
+                    $fileModel->save();
+                    $id_zip_upload = $fileModel->id;
+
+
+                    
+
+                    
+                    //dezarhivam in folderul zip
+                    $zip->extractTo($this->storageDestinationPathZip.'/'.$time_for_path);
 
                     
                     for($nr_fisier = 0; $nr_fisier < $zip->numFiles; $nr_fisier++) {
                         
-                        $file_info = pathinfo($this->storageDestinationPathZip.$zip->getNameIndex($nr_fisier));    
+                        $file_info = pathinfo($this->storageDestinationPathZip.'/'.$time_for_path.'/'.$zip->getNameIndex($nr_fisier));    
 
                         // doar zipuri  
                         if($file_info['extension'] === 'zip') {
@@ -131,11 +178,14 @@ class EfacturaController extends Controller
 
                             $zip_invoice = new ZipArchive();
 
-                            $zip_invoice->open($this->storageDestinationPathZip.$zip->getNameIndex($nr_fisier));
-                            $zip_invoice->extractTo($this->storageDestinationPathUnzip.'/'.$data_factura. '/'.$file_info['filename']);
+                            $zip_invoice->open($this->storageDestinationPathZip.'/'.$time_for_path.'/'.$zip->getNameIndex($nr_fisier));
 
 
-                            $files = Storage::disk('local')->allFiles('efactura/unzip/'.$data_factura. '/'.$file_info['filename']);
+
+                            $zip_invoice->extractTo($this->storageDestinationPathUnzip.'/'.$time_for_path.'/'.$data_factura. '/'.$file_info['filename']);
+
+
+                            $files = Storage::disk('local')->allFiles('efactura/unzip/'.$time_for_path.'/'.$data_factura. '/'.$file_info['filename']);
 
                             $info = pathinfo($this->storageDestinationPathUnzip.'/'.$files[0] );
                             
@@ -152,19 +202,20 @@ class EfacturaController extends Controller
                             
                             $invoicePathModel->zip_name = $file_info['filename'];
                             $invoicePathModel->xml_name = $xml_number;
-                            $invoicePathModel->xml_path = $data_factura. '/'.$file_info['filename'].'/'.$xml_basename;
+                            $invoicePathModel->xml_path = $time_for_path.'/'.$data_factura. '/'.$file_info['filename'].'/'.$xml_basename;
+                            $invoicePathModel->time = $time_for_path;
                             $invoicePathModel->created_at_anaf = $data_factura;
                             $invoicePathModel->date_created_anaf = date('Y-m-d', strtotime($data_factura)); 
                             $invoicePathModel->save();
                             $id_invoicePathModel = $invoicePathModel->id;
 
 
-                            $invoice_details_xml = $this->get_initial_details_from_xml($data_factura. '/'.$file_info['filename'].'/'.$xml_basename);
+                            $invoice_details_xml = $this->get_details_from_xml($time_for_path.'/'.$data_factura. '/'.$file_info['filename'].'/'.$xml_basename);
 
                             $invoiceModel = new EfacturaInvoice;    
-                            
+                                                        
                             $invoiceModel->invoice_path_id = $id_invoicePathModel;
-                            
+                            $invoiceModel->created_anaf  = date('Y-m-d', strtotime($data_factura));
                             // INFORMATII FACTURA 
                             $invoiceModel->Informatii_factura_Nr_factura = $invoice_details_xml['Informatii_factura']['Nr_factura'];  
                             $invoiceModel->Informatii_factura_Data_emitere_factura = $invoice_details_xml['Informatii_factura']['Data_emitere_factura']; 
@@ -336,7 +387,7 @@ class EfacturaController extends Controller
                             $invoiceModel->Totalurile_documentului_Suma_de_plata = $invoice_details_xml['Totalurile_documentului']['Suma_de_plata'];  
                             $invoiceModel->Totalurile_documentului_Suma_de_plata_Codul_monedei = $invoice_details_xml['Totalurile_documentului']['Suma_de_plata_Codul_monedei']; 
 
-
+                            // salvam  factura
                             $invoiceModel->save();
                             $id_invoiceModel = $invoiceModel->id;  
 
@@ -429,8 +480,8 @@ class EfacturaController extends Controller
                                     $invoiceLine->Deduceri_Pretul_brut_al_articolului = $line['Deduceri']['Pretul_brut_al_articolului'];
                                 }
 
+                                // salvam linia facturii
                                 $invoiceLine->save();
-
                                 $id_invoiceLine = $invoiceLine->id;
 
                                 //BT-158 Identificatorul clasificarii articolului
@@ -450,12 +501,12 @@ class EfacturaController extends Controller
                                     }
                                 }
 
-
-                            } 
+                            } // sfarsit linii factura
 
 
                             $numar_zipuri++;
                         }
+                        
                             
                     
                     }
@@ -485,69 +536,71 @@ class EfacturaController extends Controller
 
             }
 
-
-
-
-
-            
-            return back()->with('success','File has been uploaded.')->with('file', $request->zip->getClientOriginalName());
-
-
-        
-
+        return back()->with('success','Fisierul '. $request->zip->getClientOriginalName().' a fost incarcat cu succes. Au fost inregistrate '.$numar_zipuri.' facturi')->with('file', $request->zip->getClientOriginalName());
+   
     } 
 
 
 
-    private function save_file_upload($request) {
-        $fileModel = new EfacturaZipPath;
-        $fileName = $request->zip->getClientOriginalName();
-        $filePath = $request->file('zip')->storeAs('efactura/upload', $fileName);
-        $fileModel->user_id = auth()->user()->id;
-        $fileModel->file_name = $request->zip->getClientOriginalName();
-        $fileModel->file_path = '/storage/' . $filePath;
-        $fileModel->save();
-        return $fileModel->id;
-    }
 
  
-
+    //////////////////////////////////////////////////
+    //////////// VIZUALIZARE PDF DE LA ANAF //////////
+    //////////////////////////////////////////////////
     public function pdf_anaf($id) {
 
-                       
+                        
         $invoice_obj = EfacturaInvoicePath::find($id);
-        $path_pdf = $this->storageDestinationPathZip.$invoice_obj->created_at_anaf;
+        $path_pdf = $this->storageDestinationPathZip.$invoice_obj->time.'/'.$invoice_obj->created_at_anaf;
+
+
+
 
         $dh  = opendir($path_pdf);
         while (false !== ($fileName = readdir($dh))) {
+            
             $prefix = substr($fileName, 0, 10);
             
             $ext = substr($fileName, strrpos($fileName, '.') + 1);
-            if(in_array($ext, array("pdf")))
+            if(in_array($ext, array("pdf"))) {
+
+
+                
+
                 $a[] = $prefix; 
                 if ($prefix == $invoice_obj->xml_name ) {
                     
                     $files1 = $fileName;
                 }
+            }
 
         }
         closedir($dh);
-
-        return response()->file($this->storageDestinationPathZip.$invoice_obj->created_at_anaf.'/'. $files1);
-
-        
-        
+        return response()->file($this->storageDestinationPathZip.$invoice_obj->time.'/'.$invoice_obj->created_at_anaf.'/'. $files1);                
     }
 
+
+    //////////////////////////////////////////////////
+    //////////// VIZUALIZARE PDF DE LA ANAF //////////
+    //////////////////////////////////////////////////
+    public function semnatura_anaf($id) {
+
+                        
+        $invoice_obj = EfacturaInvoicePath::find($id);
+        $path_semnatura = $this->storageDestinationPathUnzip.$invoice_obj->time.'/'.$invoice_obj->created_at_anaf.'/'.$invoice_obj->zip_name.'/semnatura_'.$invoice_obj->xml_name.'.xml';
+
+        return response()->download($path_semnatura);                
+    }
     
 
-    private function get_initial_details_from_xml($xml_path) {
+    
+    //////////////////////////////////////////////////
+    //////////// CITIM XML SI RETURNAM UN ARRAY //////
+    //////////////////////////////////////////////////
+    private function get_details_from_xml($xml_path) {
         
         
-
         $xmlfile = file_get_contents($this->storageDestinationPathUnzip. $xml_path);
-
-
 
         @$sxe = simplexml_load_string($xmlfile);
         
@@ -571,8 +624,7 @@ class EfacturaController extends Controller
         }
 
         
-
-         //////////////////////////////////////////////////
+        //////////////////////////////////////////////////
         //////////// INFORMATII FACTURA //////////////////
         //////////////////////////////////////////////////
 
@@ -666,11 +718,9 @@ class EfacturaController extends Controller
         }
 
 
-
         //////////////////////////////////////////////////
         //////////// VANZATOR ////////////////////////////
         //////////////////////////////////////////////////
-
 
         //BT-34 Adresa electronica
         $invoice['Vanzator']['Adresa_electronica'] = null;
@@ -761,8 +811,6 @@ class EfacturaController extends Controller
         $invoice['Vanzator']['Informatii_juridice_suplimentare'] = (string) @$cac->AccountingSupplierParty->Party->PartyLegalEntity->children('cbc',TRUE)->CompanyLegalForm;
 
 
-
-
         //////////////////////////////////////////////////
         //////////// CUMPARATOR //////////////////////////
         //////////////////////////////////////////////////
@@ -851,8 +899,6 @@ class EfacturaController extends Controller
         $invoice['Cumparator']['Identificatorul_de_inregistrare_legala_Identificatorul_schemei'] = (string) @$cac->AccountingCustomerParty->Party->PartyLegalEntity->children('cbc',TRUE)->CompanyID->attributes()->schemeID ;
 
 
-
-
         //////////////////////////////////////////////////
         //////////// BENEFICIAR //////////////////////////
         //////////////////////////////////////////////////
@@ -878,11 +924,9 @@ class EfacturaController extends Controller
         }
 
 
-
         //////////////////////////////////////////////////////////
         //////////// REPREZENTANTUL FISCAL AL VANZATORULUI////////
         //////////////////////////////////////////////////////////
-
 
         if (@$cac->TaxRepresentativeParty->PartyName) {
             
@@ -920,11 +964,10 @@ class EfacturaController extends Controller
         }
 
 
-
-
         //////////////////////////////////////////////////
         //////////// INFORMATII REFERITOARE LA LIVRARE ///
         //////////////////////////////////////////////////
+
         if ($cac->Delivery) {
             
 
@@ -941,8 +984,7 @@ class EfacturaController extends Controller
             // ADRESA /////
 
             if(@$cac->Delivery->DeliveryLocation) {
-                
-            
+                           
                 //BT-71 Identificatorul locului
                 $invoice['Informatii_referitoare_la_livrare']['Locatie']['Identificatorul_locului'] = null;
                 if(@$cac->Delivery->DeliveryLocation->children('cbc',TRUE)->ID) {
@@ -1043,9 +1085,11 @@ class EfacturaController extends Controller
             
         }
 
+
         //////////////////////////////////////////////////
         //////////// TERMENI DE PLATA ////////////////////
         //////////////////////////////////////////////////
+
         $invoice['Termeni_de_plata']['Nota'] = null;
         if (@$cac->PaymentTerms) {                        
             //BT-20 Nota
@@ -1053,10 +1097,10 @@ class EfacturaController extends Controller
         }
 
 
+        //////////////////////////////////////////////////
+        //////////// BG-21 TAXA SUPLIMENTAREA ////////////
+        //////////////////////////////////////////////////
 
-        //////////////////////////////////////////////////
-        //////////// BG-21 TAXA SUPLIMENTAREA /////////////
-        //////////////////////////////////////////////////
         if(@$cac->AllowanceCharge[0]) {
                   
             //BT-98/BT-105 Codul motivului
@@ -1077,7 +1121,6 @@ class EfacturaController extends Controller
             //BT-93/BT-100 Valoarea de baza
             $invoice['Taxarea_suplimentara']['Valoarea_de_baza'] = (string) @$cac->AllowanceCharge[0]->children('cbc',TRUE)->BaseAmount;
 
-            
             //BT-95/BT-102 Codul categoriei de TVA
             $invoice['Taxarea_suplimentara']['Codul_categoriei_de_TVA'] =  (string) @$cac->AllowanceCharge[0]->TaxCategory->children('cbc',TRUE)->ID ;
             
@@ -1094,12 +1137,10 @@ class EfacturaController extends Controller
         }
 
 
-
-
-
         //////////////////////////////////////////////////
         //////////// BG-20 DEDUCERE //////////////////////
         //////////////////////////////////////////////////
+
         if(@$cac->AllowanceCharge[1]) {
                       
             //BT-98/BT-105 Codul motivului
@@ -1143,8 +1184,6 @@ class EfacturaController extends Controller
         $invoice['Totaluri_tva'] = [];
 
         if($cac->TaxTotal) {
-            
-
             
             //BT-110 Valoarea totala a TVA a facturii
             $invoice['Totaluri_tva']['Valoarea_totala_a_TVA_a_facturii'] = (string) @$cac->TaxTotal->children('cbc',TRUE)->TaxAmount;
@@ -1195,8 +1234,6 @@ class EfacturaController extends Controller
                 }
             }
         }
-
-
 
 
         //////////////////////////////////////////////////
@@ -1278,16 +1315,8 @@ class EfacturaController extends Controller
             
             //Codul monedei
             $invoice['Totalurile_documentului']['Suma_de_plata_Codul_monedei'] = (string) @$cac->LegalMonetaryTotal->children('cbc',TRUE)->PayableAmount->attributes()->currencyID;
-
-            
+          
         }
-
-
-
-
-
-
-
 
 
         //////////////////////////////////////////////////
@@ -1295,7 +1324,6 @@ class EfacturaController extends Controller
         //////////////////////////////////////////////////
 
         $invoice['Invoice_Line'] = [];
-
 
         $nr_linii= $cac->InvoiceLine->count();
 
@@ -1474,7 +1502,6 @@ class EfacturaController extends Controller
                             //BT-137/BT-142 Valoarea de baza a deducerii/taxei suplimentare
                             $invoice['Invoice_Line'][$i]['Taxa_suplimentara']['Valoarea_de_baza_a_taxei_suplimentare']  = (string) @$cac->InvoiceLine[$i]->children('cac',TRUE)->AllowanceCharge[$ac]->children('cbc',TRUE)->BaseAmount ;
 
-
                         }
 
                         //DEDUCERE
@@ -1499,8 +1526,6 @@ class EfacturaController extends Controller
                     }
                 }
                 
-                
-
                 //BT-147 Reducere/taxa suplimentara la pretul articolului
                 if(@$cac->InvoiceLine[$i]->children('cac',TRUE)->Price->children('cac',TRUE)->AllowanceCharge) {
                 
@@ -1520,12 +1545,9 @@ class EfacturaController extends Controller
                 
             }
 
-
         }
-        return $invoice;
-        
-        
-        
+
+        return $invoice;       
     }
 
 
@@ -1533,21 +1555,7 @@ class EfacturaController extends Controller
 
 
 
-    public function detail_invoice($id) {
-                       
-        $invoice_obj = EfacturaInvoice::find($id);
-        
 
-        $data = ['title'=> 'Efactura', 'invoice' => $invoice_obj];
-        return view('admin.efactura.info_invoice_details', $data);
-        
-    }
-
-    public function show(EfacturaInvoice $factura)
-    {
-        //return $factura;
-        return view('admin.efactura.show', compact('factura'));
-    }
 
 
 

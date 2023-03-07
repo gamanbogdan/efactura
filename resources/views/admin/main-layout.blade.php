@@ -81,7 +81,7 @@
 
 
   
-  <footer class="main-footer">
+  <footer class="main-footer  no-print">
     <strong>Copyright &copy; 2014-2022 <a href="#">Admin panel</a>.</strong>
     All rights reserved.
     <div class="float-right d-none d-sm-inline-block">

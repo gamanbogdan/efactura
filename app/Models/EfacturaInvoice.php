@@ -13,6 +13,7 @@ class EfacturaInvoice extends Model
 
     protected $fillable = [
         'invoice_path_id',
+        'created_anaf',
         'Informatii_factura_Nr_factura',  
         'Informatii_factura_Data_emitere_factura', 
         'Informatii_factura_Data_scadenta_factura',
@@ -156,7 +157,8 @@ class EfacturaInvoice extends Model
         'Totaluri_tva_Valoarea_totala_a_TVA_a_facturii',
         'Totaluri_tva_Codul_monedei',
 
-
+        'is_fcn',
+        'comment_fcn'
 
     ];
 

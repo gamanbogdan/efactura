@@ -44,8 +44,8 @@ $current_route = request()->route()->getName();
 
 
 
-          <li class="nav-item  {{ in_array($current_route, ['efactura.index', 'upload.list']) ?'menu-open':'' }}">
-            <a href="{{ route('efactura.index') }}" class="nav-link {{ $current_route=='efactura.index'?'active':'' }}">
+          <li class="nav-item  {{ in_array($current_route, ['efactura.index', 'efactura.show']) ? 'menu-open':'' }}">
+            <a href="{{ route('efactura.index') }}" class="nav-link {{ in_array($current_route, ['efactura.index', 'efactura.show']) ? 'active':'' }}">
               <i class="nav-icon fas fa-file-invoice"></i>
               <p>
                 Efactura

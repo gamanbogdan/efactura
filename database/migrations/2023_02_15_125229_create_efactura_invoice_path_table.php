@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('zip_name')->nullable();
             $table->string('xml_name')->nullable(); 
             $table->string('xml_path')->nullable();
+            $table->integer('time')->unsigined();
             $table->date('date_created_anaf');
             $table->string('created_at_anaf')->nullable();
             $table->timestamps();

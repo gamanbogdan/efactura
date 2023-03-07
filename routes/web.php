@@ -27,11 +27,14 @@ Route::post('/admin/login', [AuthController::class, 'postLogin'])->name('postLog
 Route::get('/admin/dashboard', [ProfileController::class, 'dashboard'])->name('dashboard');
 Route::get('/admin/logout', [ProfileController::class, 'logout'])->name('logout');
 
-Route::get('/admin/efactura-index', [EfacturaController::class, 'index'])->name('efactura.index');
+Route::get('/admin/efactura', [EfacturaController::class, 'index'])->name('efactura.index');
+Route::get('/admin/efactura/{factura}', [EfacturaController::class, 'show'])->name('efactura.show');
 
-Route::get('/admin/efactura-detail-invoice/{id}', [EfacturaController::class, 'detail_invoice'])->name('efactura.detail');
+Route::put('/admin/efactura/{factura}', [EfacturaController::class, 'update'])->name('efactura.update');
+
 Route::get('/admin/pdf_anaf/{id}', [EfacturaController::class, 'pdf_anaf'])->name('efactura.pdf_anaf');
-Route::get('/admin/fact/{factura}', [EfacturaController::class, 'show'])->name('efactura.show');
+Route::get('/admin/semnatura_anaf/{id}', [EfacturaController::class, 'semnatura_anaf'])->name('efactura.semnatura_anaf');
 
 
 Route::post('/admin/efactura-upload', [EfacturaController::class, 'upload'])->name('efactura.upload');
+

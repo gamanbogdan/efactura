@@ -22,6 +22,7 @@ class EfacturaInvoicePath extends Model
         'zip_name',
         'xml_name',
         'xml_path',
+        'time',
         'date_created_anaf',
         'created_at_anaf',
     ];
