@@ -11,12 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('efactura_invoice_comments', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('invoice_id')->unsigned(); 
-            $table->string('Nota', 500)->nullable();
+        Schema::create('efactura_nomenclator_unitate_masura', function (Blueprint $table) {
+            $table->char('cod')->primary();
+            $table->string('denumire')->nullable();
             $table->timestamps();
-            $table->foreign('invoice_id')->references('id')->on('efactura_invoice')->onDelete('cascade');
         });
     }
 
@@ -25,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('efactura_invoice_comments');
+        Schema::dropIfExists('efactura_nomenclator_unitate_masura');
     }
 };

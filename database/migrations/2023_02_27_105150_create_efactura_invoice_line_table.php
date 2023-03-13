@@ -22,14 +22,14 @@ return new class extends Migration
             $table->string('Pretul_net_al_articolului_Codul_monedei')->nullable();
             $table->string('Cantitatea_de_baza_a_pretului_articolului')->nullable();
             $table->string('Cantitate_facturata')->nullable();
-            $table->string('UM')->nullable();
-            $table->string('Codul_categoriei_de_TVA')->nullable();
+            $table->char('UM')->nullable();
+            $table->char('Codul_categoriei_de_TVA')->nullable();
             $table->string('Cota_de_TVA')->nullable(); 
             $table->string('Valoarea_neta_a_liniei')->nullable();
 
             $table->string('Informatii_suplimentare_Descriere_articol')->nullable();
             $table->string('Informatii_suplimentare_Tara_de_origine_a_articolului')->nullable();
-            $table->string('Informatii_suplimentare_Nota_liniei_facturii')->nullable();
+            $table->string('Informatii_suplimentare_Nota_liniei_facturii', 500)->nullable();
             $table->string('Informatii_suplimentare_Referinta_contabila_a_cumparatorului_din_linia_facturii')->nullable();
             $table->string('Informatii_suplimentare_Data_de_inceput_a_perioadei_de_facturare_a_liniei_facturii')->nullable();
             $table->string('Informatii_suplimentare_Data_de_sfarsit_a_perioadei_de_facturare_a_liniei_facturii')->nullable();
@@ -41,7 +41,7 @@ return new class extends Migration
             $table->string('Informatii_suplimentare_Identificatorul_standard_al_articolului')->nullable();
             $table->string('Informatii_suplimentare_Identificatorul_standard_al_articolului_Identificatorul_schemei')->nullable();
 
-
+            
 
             $table->string('Atributul_articolului_Numele_atributului_articolului')->nullable();
             $table->string('Atributul_articolului_Valoarea_atributului')->nullable();       
@@ -68,6 +68,7 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('invoice_id')->references('id')->on('efactura_invoice')->onDelete('cascade');
+            $table->foreign('Codul_categoriei_de_TVA')->references('cod')->on('efactura_nomenclator_cod_categorie_tva');
         });
     }
 

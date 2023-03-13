@@ -147,7 +147,7 @@ return new class extends Migration
             $table->string('Vanzator_Identificatorul_de_inregistrare_legala_Identificatorul_schemei')->nullable();
 
             //BT-33 Informatii juridice suplimentare
-            $table->string('Vanzator_Informatii_juridice_suplimentare')->nullable();
+            $table->string('Vanzator_Informatii_juridice_suplimentare', 500)->nullable();
 
 
 
@@ -315,7 +315,7 @@ return new class extends Migration
             //////////////////////////////////////////////////
 
             //BT-81 Codul tipului instrumentului de plata            
-            $table->string('Instructiuni_de_plata_Codul_tipului_instrumentului_de_plata')->nullable();
+            $table->char('Instructiuni_de_plata_Codul_tipului_instrumentului_de_plata')->nullable();
 
             //BT-82 Nota privind instrumentul de plata
             $table->string('Instructiuni_de_plata_Nota_privind_instrumentul_de_plata')->nullable();
@@ -350,7 +350,7 @@ return new class extends Migration
             //////////// TERMENI DE PLATA ////////////////////
             //////////////////////////////////////////////////
             //BT-20 Nota
-            $table->string('Termeni_de_plata_Nota')->nullable();
+            $table->text('Termeni_de_plata_Nota')->nullable();
 
 
             //////////////////////////////////////////////////
@@ -484,13 +484,15 @@ return new class extends Migration
 
             /////////////////////////////////////////////////
             // FCN REMARKS //////////////////////////////////
-            /////////////////////////////////////////////////            
-            $table->boolean('is_fcn')->default(false);
+            ///////////////////////////////////////////////// 
+                    
+            $table->boolean('is_fcn')->nullable()->default(null); 
             $table->string('comment_fcn')->nullable();
 
             $table->timestamps();
 
-            $table->foreign('invoice_path_id')->references('id')->on('efactura_invoice_path')->onDelete('cascade');
+            $table->foreign('invoice_path_id')->references('id')->on('efactura_path_invoice')->onDelete('cascade');
+            $table->foreign('Instructiuni_de_plata_Codul_tipului_instrumentului_de_plata')->references('cod')->on('efactura_nomenclator_tip_instrument_plata');
         });
     }
 

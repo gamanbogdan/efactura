@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('efactura_invoice_path', function (Blueprint $table) {
+        Schema::create('efactura_path_invoice', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('file_upload_id')->unsigned(); 
             
-            $table->string('zip_name')->nullable();
+            
             $table->string('xml_name')->nullable(); 
             $table->string('xml_path')->nullable();
             $table->integer('time')->unsigined();
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->timestamps();
 
 
-            $table->foreign('file_upload_id')->references('id')->on('efactura_zip_path')->onDelete('cascade');
+            $table->foreign('file_upload_id')->references('id')->on('efactura_path_zip')->onDelete('cascade');
         });
     }
 
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('efactura_invoice_path');
+        Schema::dropIfExists('efactura_path_invoice');
     }
 };

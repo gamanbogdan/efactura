@@ -39,15 +39,24 @@
                         @csrf
                         @method('PUT')
                         <div class="form-group mr-4">
-                                
-                            <label for="comment_fcn" class="mr-2"> <h5>Comentariu: </h5></label>
-                            <input type="text" name="comment_fcn" value="{{ $factura->comment_fcn }}" class="form-control" placeholder="Comentariu" id="comment_fcn">
+                                   
+                            <input type="text" name="comment_fcn" value="{{ $factura->comment_fcn }}" class="form-control" placeholder="Comentariu ..." id="comment_fcn">
                         </div>
 
 
+
                         <div class="form-group mr-4">
-                            <label for="is_fcn" class="mr-2"> Apartine FCN: </label>
-                            <input type="checkbox" name="is_fcn" value="1" id="is_fcn" {{  ($factura->is_fcn == 1 ? ' checked' : '') }} > 
+                            <h5 class="mr-4 mb-0"> Apartine FCN: </h5>
+                            <div class="form-check form-check-inline">
+                                <label for="is_fcn_da" class="form-check-label mr-1"> Da </label>
+                                <input type="radio" name="is_fcn" value="1" id="is_fcn_da" class="form-check-input" {{  ($factura->is_fcn === '1' ? ' checked' : '') }} >
+                            </div>
+
+                            <div class="form-check form-check-inline">
+                                <label for="is_fcn_nu" class="form-check-label mr-1"> Nu </label>
+                                <input type="radio" name="is_fcn" value="0" id="is_fcn_nu" class="form-check-input" {{  ($factura->is_fcn === '0' ? ' checked' : '') }} > 
+                            </div>
+                        
                         </div>
 
 
@@ -82,8 +91,8 @@
             <div class="row">
                 <div class="col-12">
                 <h4>
-                    <i class="fas fa-globe"></i> FCN.
-                    <small class="float-right">Date: {{ date('d/m/Y') }} </small>
+                    
+                    <small class="float-right">Data: {{ date('d/m/Y') }} </small>
                 </h4>
                 </div>
                 <!-- /.col -->
@@ -126,7 +135,7 @@
                 @endif
 
                 @if($factura->Informatii_factura_Data_scadenta_factura)
-                    <b>Data emitere:</b> {{ $factura->Informatii_factura_Data_scadenta_factura }}  <br>
+                    <b>Data scadenta:</b> {{ $factura->Informatii_factura_Data_scadenta_factura }}  <br>
                 @endif
 
                 @if($factura->Informatii_factura_Referinta_contractului)
@@ -171,10 +180,12 @@
             </div>
             <!-- /.row -->
 
+
+
             <!-- Table row -->
             <div class="row">
                 <div class="col-12 table-responsive">
-                <table class="table table-striped">
+                <table class="table table-striped  ">
                                 
                             
                     <thead>
@@ -186,7 +197,7 @@
                             <th>Pret unitar</th>
                             <th>Valoare</th>
                             <th>Cota de TVA</th>
-
+                            <th>TVA</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -198,12 +209,39 @@
                                 <td>{{ ++$indexKey }}</td>
                                 <td>{{ $line->Nume_articol  }}</td>
                                 
-                                <td>{{ $line->UM  }}</td>
+                                <td>{{ $line->UnitateMasura->denumire  }}</td>
                                 <td>{{ $line->Cantitate_facturata  }}</td>
                                 <td>{{ $line->Pretul_net_al_articolului  }}</td>
                                 <td>{{ $line->Valoarea_neta_a_liniei  }}</td>
-                                <td>{{ $line->Cota_de_TVA ?: '0' }}%</td>
+                                <td>{{ $line->Cota_de_TVA}}% </td>
+                                <td>{{ ($line->Cota_de_TVA*$line->Valoarea_neta_a_liniei)/100}} </td>
                             </tr>
+
+                            
+                            @if($line->Taxa_suplimentara_Codul_motivului_taxei_suplimentare)
+                            <tr>
+                                <td colspan='8'>
+                                {{ $line->Taxa_suplimentara_Codul_motivului_taxei_suplimentare  }}
+                                {{ $line->Taxa_suplimentara_Motiv_taxa_suplimentara  }}
+                                {{ $line->Taxa_suplimentara_Procentajul_taxei_suplimentare  }}
+                                {{ $line->Taxa_suplimentara_Valoarea_taxei_suplimentare  }}
+                                {{ $line->Taxa_suplimentara_Valoarea_de_baza_a_taxei_suplimentare  }} 
+                                </td>
+                            </tr>                               
+                            @endif
+
+                            @if($line->Deducere_Codul_motivului_deducerii)
+                            <tr>
+                                <td colspan='8'>
+                                    Deducere:
+                                    {{ $line->Deducere_Motiv_deducere  }}
+                                    | Procent: {{ $line->Deducere_Procentajul_deducerii  }}
+                                    | Valoare: {{ $line->Deducere_Valoarea_deducerii  }}
+                                    | Valoare de baza: {{ $line->Deducere_Valoarea_de_baza_a_deducerii  }}  
+                                    </td>
+                            </tr>                             
+                            @endif                           
+ 
 
                         @endforeach
 
@@ -218,69 +256,95 @@
             </div>
             <!-- /.row -->
 
+            @if(count($factura->EfacturaInvoiceComments))
+            <div class="row invoice-info">
+                <div class="col-sm-12 invoice-col">
+                <p class="lead my-1">Nota:</p>
+                    <ul>
+                        @foreach( $factura->EfacturaInvoiceComments  as $indexKey => $note )                                                
+                            <li>{{ $note->Nota  }}</li>                                           
+                        @endforeach
+                    </ul>
+                </div>        
+            </div>  
+            @endif 
+
             <div class="row">
                 <!-- accepted payments column -->
                 <div class="col-6">
                     <p class="lead my-1">Instructiuni de plata:</p>
 
-                    @if($factura->Instructiuni_de_plata_Codul_tipului_instrumentului_de_plata)
-                        <b>Codul tip plata:</b> {{ $factura->Instructiuni_de_plata_Codul_tipului_instrumentului_de_plata }}  <br>
-                    @endif
-                    
-                    @if($factura->Instructiuni_de_plata_Nota_privind_instrumentul_de_plata)
-                        <b>Nota_privind_instrumentul_de_plata:</b> {{ $factura->Instructiuni_de_plata_Nota_privind_instrumentul_de_plata }}  <br>
-                    @endif
+                     @php $inst=false @endphp
+                        @if($factura->Instructiuni_de_plata_Codul_tipului_instrumentului_de_plata)
+                            <b>Tip plata:</b> {{ $factura->TipInstrumentPlata->denumire }}  <br>
+                            @php $inst=true @endphp
+                        @endif
+                        
+                        @if($factura->Instructiuni_de_plata_Nota_privind_instrumentul_de_plata)
+                            <b>Nota privind instrumentul de plata:</b> {{ $factura->Instructiuni_de_plata_Nota_privind_instrumentul_de_plata }}  <br>
+                            @php $inst=true @endphp
+                        @endif
 
-                    @if($factura->Instructiuni_de_plata_Aviz_de_plata)
-                        <b>Aviz_de_plata:</b> {{ $factura->Instructiuni_de_plata_Aviz_de_plata }}  <br>
-                    @endif
+                        @if($factura->Instructiuni_de_plata_Aviz_de_plata)
+                            <b>Aviz de plata:</b> {{ $factura->Instructiuni_de_plata_Aviz_de_plata }}  <br>
+                            @php $inst=true @endphp
+                        @endif
 
-                    @if($factura->Instructiuni_de_plata_Numarul_contului_principal_al_cardului_de_plata)
-                        <b>Numarul_contului_principal_al_cardului_de_plata:</b> {{ $factura->Instructiuni_de_plata_Numarul_contului_principal_al_cardului_de_plata }}  <br>
-                    @endif
+                        @if($factura->Instructiuni_de_plata_Numarul_contului_principal_al_cardului_de_plata)
+                            <b>Numarul contului principal al cardului de plata:</b> {{ $factura->Instructiuni_de_plata_Numarul_contului_principal_al_cardului_de_plata }}  <br>
+                            @php $inst=true @endphp
+                        @endif
 
+                        @if($factura->Instructiuni_de_plata_Numele_detinatorului_cardului_de_plata)
+                            <b>Numele detinatorului cardului de plata:</b> {{ $factura->Instructiuni_de_plata_Numele_detinatorului_cardului_de_plata }}  <br>
+                            @php $inst=true @endphp
+                        @endif
 
-                    @if($factura->Instructiuni_de_plata_Numele_detinatorului_cardului_de_plata)
-                        <b>Numele_detinatorului_cardului_de_plata:</b> {{ $factura->Instructiuni_de_plata_Numele_detinatorului_cardului_de_plata }}  <br>
-                    @endif
+                        @if($factura->Instructiuni_de_plata_Identificatorul_contului_de_plata)
+                            <b>Cont:</b> {{ $factura->Instructiuni_de_plata_Identificatorul_contului_de_plata }}  <br>
+                            @php $inst=true @endphp
+                        @endif
 
-                    @if($factura->Instructiuni_de_plata_Identificatorul_contului_de_plata)
-                        <b>Cont:</b> {{ $factura->Instructiuni_de_plata_Identificatorul_contului_de_plata }}  <br>
-                    @endif
+                        @if($factura->Instructiuni_de_plata_Numele_contului_de_plata)
+                            <b>Numele contului:</b> {{ $factura->Instructiuni_de_plata_Numele_contului_de_plata }}  <br>
+                            @php $inst=true @endphp
+                        @endif
 
-                    @if($factura->Instructiuni_de_plata_Numele_contului_de_plata)
-                        <b>Numele_contului_de_plata:</b> {{ $factura->Instructiuni_de_plata_Numele_contului_de_plata }}  <br>
-                    @endif
+                        @if($factura->Instructiuni_de_plata_Identificatorul_furnizorului_de_servicii_de_plata)
+                            <b>Banca:</b> {{ $factura->Instructiuni_de_plata_Identificatorul_furnizorului_de_servicii_de_plata }}  <br>
+                            @php $inst=true @endphp
+                        @endif
 
-                    @if($factura->Instructiuni_de_plata_Identificatorul_furnizorului_de_servicii_de_plata)
-                        <b>Banca:</b> {{ $factura->Instructiuni_de_plata_Identificatorul_furnizorului_de_servicii_de_plata }}  <br>
-                    @endif
+                        @if($factura->Instructiuni_de_plata_Debitare_directa_Identificatorul_referintei_mandatului)
+                            <b>Debitare directa Identificatorul referintei mandatului:</b> {{ $factura->Instructiuni_de_plata_Debitare_directa_Identificatorul_referintei_mandatului }}  <br>
+                            @php $inst=true @endphp
+                        @endif
 
-                    @if($factura->Instructiuni_de_plata_Debitare_directa_Identificatorul_referintei_mandatului)
-                        <b>Debitare_directa_Identificatorul_referintei_mandatului:</b> {{ $factura->Instructiuni_de_plata_Debitare_directa_Identificatorul_referintei_mandatului }}  <br>
-                    @endif
+                        @if($factura->Instructiuni_de_plata_Debitare_directa_Identificatorul_contului_debitat)
+                            <b>Debitare directa Identificatorul contului debitat:</b> {{ $factura->Instructiuni_de_plata_Debitare_directa_Identificatorul_contului_debitat }}  <br>
+                            @php $inst=true @endphp
+                        @endif
 
+                        @if($inst)  @endif
+                        
 
-                    @if($factura->Instructiuni_de_plata_Debitare_directa_Identificatorul_contului_debitat)
-                        <b>Debitare_directa_Identificatorul_contului_debitat:</b> {{ $factura->Instructiuni_de_plata_Debitare_directa_Identificatorul_contului_debitat }}  <br>
-                    @endif
 
                     <p class="lead my-1" >Livrare:</p>
 
                     @if($factura->Informatii_referitoare_la_livrare_Data_reala_a_livrarii)
-                        <b>Data_reala_a_livrarii:</b> {{ $factura->Informatii_referitoare_la_livrare_Data_reala_a_livrarii }}  <br>
+                        <b>Data reala a livrarii:</b> {{ $factura->Informatii_referitoare_la_livrare_Data_reala_a_livrarii }}  <br>
                     @endif
 
                     @if($factura->Informatii_referitoare_la_livrare_Numele_partii_catre_care_se_face_livrarea)
-                        <b>Numele_partii_catre_care_se_face_livrarea:</b> {{ $factura->Informatii_referitoare_la_livrare_Numele_partii_catre_care_se_face_livrarea }}  <br>
+                        <b>Numele partii catre care se face livrarea:</b> {{ $factura->Informatii_referitoare_la_livrare_Numele_partii_catre_care_se_face_livrarea }}  <br>
                     @endif
 
                     @if($factura->Informatii_referitoare_la_livrare_Locatie_Identificatorul_locului)
-                        <b>Locatie_Identificatorul_locului:</b> {{ $factura->Informatii_referitoare_la_livrare_Locatie_Identificatorul_locului }}  <br>
+                        <b>Locatie Identificatorul locului:</b> {{ $factura->Informatii_referitoare_la_livrare_Locatie_Identificatorul_locului }}  <br>
                     @endif
 
                     @if($factura->Informatii_referitoare_la_livrare_Locatie_Identificatorul_schemei)
-                        <b>Locatie_Identificatorul_schemei:</b> {{ $factura->Informatii_referitoare_la_livrare_Locatie_Identificatorul_schemei }}  <br>
+                        <b>Locatie Identificatorul schemei:</b> {{ $factura->Informatii_referitoare_la_livrare_Locatie_Identificatorul_schemei }}  <br>
                     @endif
 
                     @if($factura->Informatii_referitoare_la_livrare_Locatie_Adresa_Strada)
@@ -288,11 +352,11 @@
                     @endif
 
                     @if($factura->Informatii_referitoare_la_livrare_Locatie_Adresa_Informatii_suplimentare_strada)
-                        <b>Informatii_suplimentare_strada:</b> {{ $factura->Informatii_referitoare_la_livrare_Locatie_Adresa_Informatii_suplimentare_strada }}  <br>
+                        <b>Informatii suplimentare strada:</b> {{ $factura->Informatii_referitoare_la_livrare_Locatie_Adresa_Informatii_suplimentare_strada }}  <br>
                     @endif
 
                     @if($factura->Informatii_referitoare_la_livrare_Locatie_Adresa_Informatii_suplimentare_adresa)
-                        <b>Informatii_suplimentare_adresa:</b> {{ $factura->Informatii_referitoare_la_livrare_Locatie_Adresa_Informatii_suplimentare_adresa }}  <br>
+                        <b>Informatii suplimentare adresa:</b> {{ $factura->Informatii_referitoare_la_livrare_Locatie_Adresa_Informatii_suplimentare_adresa }}  <br>
                     @endif
             
                     @if($factura->Informatii_referitoare_la_livrare_Locatie_Adresa_Oras)
@@ -300,47 +364,48 @@
                     @endif
 
                     @if($factura->Informatii_referitoare_la_livrare_Locatie_Adresa_Cod_Postal)
-                        <b>Cod_Postal:</b> {{ $factura->Informatii_referitoare_la_livrare_Locatie_Adresa_Cod_Postal }}  <br>
+                        <b>Cod Postal:</b> {{ $factura->Informatii_referitoare_la_livrare_Locatie_Adresa_Cod_Postal }}  <br>
                     @endif
 
                     @if($factura->Informatii_referitoare_la_livrare_Locatie_Adresa_Subdiviziunea_tarii)
-                        <b>Subdiviziunea_tarii:</b> {{ $factura->Informatii_referitoare_la_livrare_Locatie_Adresa_Subdiviziunea_tarii }}  <br>
+                        <b>Subdiviziunea tarii:</b> {{ $factura->Informatii_referitoare_la_livrare_Locatie_Adresa_Subdiviziunea_tarii }}  <br>
                     @endif
 
                     @if($factura->Informatii_referitoare_la_livrare_Locatie_Adresa_Tara)
                         <b>Tara:</b> {{ $factura->Informatii_referitoare_la_livrare_Locatie_Adresa_Tara }}  <br>
                     @endif
+                    
                 </div>
                 <!-- /.col -->
 
 
                 <div class="col-6">
-                <p class="lead">Amount Due 2/22/2014</p>
+                <p class="lead">Totaluri document</p>
 
                 <div class="table-responsive">
                     <table class="table">
                     <tr>
-                        <th style="width:50%">Totalurile_documentului_Suma_valorilor_nete_ale_liniilor_facturii:</th>
+                        <th >Suma valorilor nete ale liniilor facturii:</th>
                         <td>{{ $factura->Totalurile_documentului_Suma_valorilor_nete_ale_liniilor_facturii }}</td>
                     </tr>
 
                     
                     <tr>
-                        <th style="width:50%">Totalurile_documentului_Suma_de_plata:</th>
+                        <th >Suma de plata:</th>
                         <td>{{ $factura->Totalurile_documentului_Suma_de_plata }}</td>
                     </tr>
 
                     <tr>
-                        <th style="width:50%">Totalurile_documentului_Valoarea_totala_a_facturii_fara_TVA:</th>
+                        <th>Valoarea totala a facturii fara TVA:</th>
                         <td>{{ $factura->Totalurile_documentului_Valoarea_totala_a_facturii_fara_TVA }}</td>
                     </tr>
                     
                     <tr>
-                        <th>Totaluri_tva_Valoarea_totala_a_TVA_a_facturii</th>
+                        <th>Valoarea totala a TVA a facturii</th>
                         <td>{{ $factura->Totaluri_tva_Valoarea_totala_a_TVA_a_facturii }}</td>
                     </tr>
                     <tr>
-                        <th>Totalurile_documentului_Valoarea_totala_a_facturii_cu_TVA:</th>
+                        <th>Valoarea totala a facturii cu TVA:</th>
                         <td>{{ $factura->Totalurile_documentului_Valoarea_totala_a_facturii_cu_TVA }} </td>
                     </tr>
 

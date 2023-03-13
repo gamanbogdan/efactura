@@ -68,4 +68,11 @@ class EfacturaInvoiceLine extends Model
         return $this->hasMany(EfacturaInvoiceLineCommodityClassification::class, 'line_id', 'id');
     }
 
+    public function CodCategorieTva() {
+        return $this->hasOne(Nomenclatoare\CodCategorieTva::class, 'cod', 'Codul_categoriei_de_TVA');
+    }
+
+    public function UnitateMasura() {
+        return $this->hasOne(Nomenclatoare\UnitateMasura::class, 'cod', 'UM');
+    }
 }

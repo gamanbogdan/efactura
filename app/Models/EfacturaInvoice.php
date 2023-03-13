@@ -163,9 +163,9 @@ class EfacturaInvoice extends Model
     ];
 
 
-    public function EfacturaInvoicePath()
+    public function EfacturaPathInvoice()
     {
-        return $this->belongsTo(EfacturaInvoicePath::class, 'invoice_path_id', 'id');
+        return $this->belongsTo(EfacturaPathInvoice::class, 'invoice_path_id', 'id');
     }
 
     public function EfacturaInvoiceComments() {
@@ -180,7 +180,9 @@ class EfacturaInvoice extends Model
         return $this->hasMany(EfacturaInvoiceLine::class, 'invoice_id', 'id');
     }
 
-    
+    public function TipInstrumentPlata() {
+        return $this->hasOne(Nomenclatoare\TipInstrumentPlata::class, 'cod', 'Instructiuni_de_plata_Codul_tipului_instrumentului_de_plata');
+    }
     
 }
 

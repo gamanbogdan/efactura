@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('efactura_zip_path', function (Blueprint $table) {
+        Schema::create('efactura_path_zip', function (Blueprint $table) {
             $table->id();
             $table->integer('user_id')->unsigned();            
             $table->string('file_name')->nullable();
@@ -29,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('efactura_zip_path');
+        Schema::dropIfExists('efactura_path_zip');
     }
 };

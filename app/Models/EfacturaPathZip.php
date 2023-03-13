@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class EfacturaZipPath extends Model
+class EfacturaPathZip extends Model
 {
     use HasFactory;
 
-    protected $table='efactura_zip_path';
+    protected $table='efactura_path_zip';
 
 
 
@@ -22,8 +22,8 @@ class EfacturaZipPath extends Model
     ];
 
 
-    public function EfacturaInvoicePath()
+    public function EfacturaPathInvoice()
     {
-        return $this->hasMany(EfacturaInvoicePath::class,'file_upload_id', 'id');
+        return $this->hasMany(EfacturaPathInvoice::class,'file_upload_id', 'id');
     }
 }
