@@ -216,135 +216,11 @@ return new class extends Migration
 
 
 
-            //////////////////////////////////////////////////
-            //////////// BENEFICIAR //////////////////////////
-            //////////////////////////////////////////////////
-
-           //BT-60 Identificator
-           $table->string('Beneficiar_Identificator')->nullable();
-                        
-           //BT-60-1 Identificatorul schemei
-           $table->string('Beneficiar_Identificator_Identificatorul_schemei')->nullable();
-           
-           //BT-59 Nume beneficiar            
-           $table->string('Beneficiar_Nume_beneficiar')->nullable();
-           
-           //BT-61 Identificatorul de inregistrare legala
-           $table->string('Beneficiar_Identificatorul_de_inregistrare_legala')->nullable();
-           
-           //BT-61-1 Identificatorul schemei
-           $table->string('Beneficiar_Identificatorul_de_inregistrare_legala_Identificatorul_schemei')->nullable();
              
 
-            //////////////////////////////////////////////////////////
-            //////////// REPREZENTANTUL FISCAL AL VANZATORULUI////////
-            //////////////////////////////////////////////////////////
 
-            //BT-62 Nume
-            $table->string('Reprezentantul_fiscal_al_vanzatorului_Nume')->nullable();
-                
-            // ADRESA /////
-
-            //BT-64 Strada           
-            $table->string('Reprezentantul_fiscal_al_vanzatorului_Adresa_Strada')->nullable();
-
-            //BT-65 Informatii suplimentare strada         
-            $table->string('Reprezentantul_fiscal_al_vanzatorului_Adresa_Informatii_suplimentare_strada')->nullable();
-
-            //BT-66 Oras
-            $table->string('Reprezentantul_fiscal_al_vanzatorului_Adresa_Oras')->nullable();
-
-            //BT-67 Cod Postal           
-            $table->string('Reprezentantul_fiscal_al_vanzatorului_Adresa_Cod_Postal')->nullable();
-                    
-            //BT-68 Subdiviziunea tarii          
-            $table->string('Reprezentantul_fiscal_al_vanzatorului_Adresa_Subdiviziunea_tarii')->nullable();
-
-            //BT-69 Tara
-            $table->string('Reprezentantul_fiscal_al_vanzatorului_Adresa_Tara')->nullable();
-
-            //BT-164 Informatii suplimentare adresa
-            $table->string('Reprezentantul_fiscal_al_vanzatorului_Adresa_Informatii_suplimentare_adresa')->nullable();
-
-            //BT-63 Identificatorul de TVA
-            $table->string('Reprezentantul_fiscal_al_vanzatorului_Identificatorul_de_TVA')->nullable();
 
             
-            //////////////////////////////////////////////////
-            //////////// INFORMATII REFERITOARE LA LIVRARE ///
-            //////////////////////////////////////////////////
-
-            //BT-72 Data reala a livrarii
-            $table->string('Informatii_referitoare_la_livrare_Data_reala_a_livrarii')->nullable();
-
-            //BT-70 Numele partii catre care se face livrarea
-            $table->string('Informatii_referitoare_la_livrare_Numele_partii_catre_care_se_face_livrarea')->nullable();
-                            
-            // ADRESA /////        
-            //BT-71 Identificatorul locului
-            $table->string('Informatii_referitoare_la_livrare_Locatie_Identificatorul_locului')->nullable();
-
-            //BT-71-1 Identificatorul schemei
-            $table->string('Informatii_referitoare_la_livrare_Locatie_Identificatorul_schemei')->nullable();             
-
-            //BT-75 Strada
-            $table->string('Informatii_referitoare_la_livrare_Locatie_Adresa_Strada')->nullable();
-
-            //BT-76 Informatii suplimentare strada
-            $table->string('Informatii_referitoare_la_livrare_Locatie_Adresa_Informatii_suplimentare_strada')->nullable();
-
-            //BT-165 Informatii suplimentare adresa
-            $table->string('Informatii_referitoare_la_livrare_Locatie_Adresa_Informatii_suplimentare_adresa')->nullable();
-
-            //BT-77 Oras
-            $table->string('Informatii_referitoare_la_livrare_Locatie_Adresa_Oras')->nullable();
-
-            //BT-78 Cod Postal
-            $table->string('Informatii_referitoare_la_livrare_Locatie_Adresa_Cod_Postal')->nullable();
-
-            //BT-79 Subdiviziunea tarii
-            $table->string('Informatii_referitoare_la_livrare_Locatie_Adresa_Subdiviziunea_tarii')->nullable();
-
-            //BT-80 Tara
-            $table->string('Informatii_referitoare_la_livrare_Locatie_Adresa_Tara')->nullable();
-                    
-
-
-            //////////////////////////////////////////////////
-            //////////// INSTRUCTIUNI DE PLATA ///////////////
-            //////////////////////////////////////////////////
-
-            //BT-81 Codul tipului instrumentului de plata            
-            $table->char('Instructiuni_de_plata_Codul_tipului_instrumentului_de_plata')->nullable();
-
-            //BT-82 Nota privind instrumentul de plata
-            $table->string('Instructiuni_de_plata_Nota_privind_instrumentul_de_plata')->nullable();
-
-            //BT-83 Aviz de plata
-            $table->string('Instructiuni_de_plata_Aviz_de_plata')->nullable();
-
-            //BT-87 Numarul contului principal al cardului de plata
-            $table->string('Instructiuni_de_plata_Numarul_contului_principal_al_cardului_de_plata')->nullable();
-
-            //BT-88 Numele detinatorului cardului de plata
-            $table->string('Instructiuni_de_plata_Numele_detinatorului_cardului_de_plata')->nullable();
-
-            //BT-84 Identificatorul contului de plata
-            $table->string('Instructiuni_de_plata_Identificatorul_contului_de_plata')->nullable();
-
-            //BT-85 Numele contului de plata
-            $table->string('Instructiuni_de_plata_Numele_contului_de_plata')->nullable();
-
-            //BT-86 Identificatorul furnizorului de servicii de plata
-            $table->string('Instructiuni_de_plata_Identificatorul_furnizorului_de_servicii_de_plata')->nullable();
-
-            // DEBITARE directa///// 
-		    //BT-89 Identificatorul referintei mandatului
-            $table->string('Instructiuni_de_plata_Debitare_directa_Identificatorul_referintei_mandatului')->nullable();
-
-		    //BT-91 Identificatorul contului debitat
-            $table->string('Instructiuni_de_plata_Debitare_directa_Identificatorul_contului_debitat')->nullable();
-
 
             //////////////////////////////////////////////////
             //////////// TERMENI DE PLATA ////////////////////
@@ -353,68 +229,7 @@ return new class extends Migration
             $table->text('Termeni_de_plata_Nota')->nullable();
 
 
-            //////////////////////////////////////////////////
-            //////////// BG-21 TAXA SUPLIMENTAREA /////////////
-            //////////////////////////////////////////////////
-
-            //BT-98/BT-105 Codul motivului
-            $table->string('Taxarea_suplimentara_Codul_motivului')->nullable();
-
-            //BT-97/BT-104 Motivul
-            $table->string('Taxarea_suplimentara_Motivul')->nullable();
-
-            //BT-94/BT-101 Procent
-            $table->string('Taxarea_suplimentara_Procent')->nullable();
-                        
-            //BT-92/BT-99 Valoare
-            $table->string('Taxarea_suplimentara_Valoare')->nullable();
-
-            //Codul monedei RON
-            $table->string('Taxarea_suplimentara_Codul_monedei_RON')->nullable();
-
-            //BT-93/BT-100 Valoarea de baza
-            $table->string('Taxarea_suplimentara_Valoarea_de_baza')->nullable();
-
-            //BT-95/BT-102 Codul categoriei de TVA
-            $table->string('Taxarea_suplimentara_Codul_categoriei_de_TVA')->nullable();
-
-            //BT-96/BT-103 Cota de TVA
-            $table->string('Taxarea_suplimentara_Cota_de_TVA')->nullable();
-
-            //Identificatorul schemei VAT
-            $table->string('Taxarea_suplimentara_Identificatorul_schemei_VAT')->nullable();
-
-
-        	//////////////////////////////////////////////////
-        	//////////// BG-20 DEDUCERE //////////////////////
-        	//////////////////////////////////////////////////
-
-            //BT-98/BT-105 Codul motivului
-            $table->string('Deducere_Codul_motivului')->nullable();
-
-            //BT-97/BT-104 Motivul
-            $table->string('Deducere_Motivul')->nullable();
-
-            //BT-94/BT-101 Procent
-            $table->string('Deducere_Procent')->nullable();
-                        
-            //BT-92/BT-99 Valoare
-            $table->string('Deducere_Valoare')->nullable();
-
-            //Codul monedei RON
-            $table->string('Deducere_Codul_monedei_RON')->nullable();
-
-            //BT-93/BT-100 Valoarea de baza
-            $table->string('Deducere_Valoarea_de_baza')->nullable();
-
-            //BT-95/BT-102 Codul categoriei de TVA
-            $table->string('Deducere_Codul_categoriei_de_TVA')->nullable();
-
-            //BT-96/BT-103 Cota de TVA
-            $table->string('Deducere_Cota_de_TVA')->nullable();
-
-            //Identificatorul schemei VAT
-            $table->string('Deducere_Identificatorul_schemei_VAT')->nullable();
+ 
 
 
 
@@ -492,7 +307,9 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('invoice_path_id')->references('id')->on('efactura_path_invoice')->onDelete('cascade');
-            $table->foreign('Instructiuni_de_plata_Codul_tipului_instrumentului_de_plata')->references('cod')->on('efactura_nomenclator_tip_instrument_plata');
+            
+            $table->index(['created_anaf']);
+        
         });
     }
 

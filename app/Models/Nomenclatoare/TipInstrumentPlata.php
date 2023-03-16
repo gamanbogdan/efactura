@@ -18,8 +18,8 @@ class TipInstrumentPlata extends Model
         'denumire',        
     ];
 
-    public function EfacturaInvoice()
+    public function EfacturaInvoicePaymentMeans()
     {
-        return $this->belongsTo(EfacturaInvoice::class, 'Instructiuni_de_plata_Codul_tipului_instrumentului_de_plata', 'cod');
+        return $this->belongsTo(EfacturaInvoicePaymentMeans::class, 'Codul_tipului_instrumentului_de_plata', 'cod');
     }
 }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('file_name')->nullable();
             $table->string('file_path')->nullable();
             $table->integer('number_invoices')->unsigned()->nullable(); 
+            $table->integer('number_invoices_duplicate')->unsigned()->nullable(); 
             $table->timestamps();
         });
 

@@ -74,68 +74,7 @@ class EfacturaInvoice extends Model
         'Cumparator_Identificatorul_de_inregistrare_legala',
         'Cumparator_Identificatorul_de_inregistrare_legala_Identificatorul_schemei',
 
-        'Beneficiar_Identificator',
-        'Beneficiar_Identificator_Identificatorul_schemei',
-        'Beneficiar_Nume_beneficiar',
-        'Beneficiar_Identificatorul_de_inregistrare_legala',
-        'Beneficiar_Identificatorul_de_inregistrare_legala_Identificatorul_schemei',
-
-        'Reprezentantul_fiscal_al_vanzatorului_Nume',
-        'Reprezentantul_fiscal_al_vanzatorului_Adresa_Strada',
-        'Reprezentantul_fiscal_al_vanzatorului_Adresa_Informatii_suplimentare_strada',
-        'Reprezentantul_fiscal_al_vanzatorului_Adresa_Oras',
-        'Reprezentantul_fiscal_al_vanzatorului_Adresa_Cod_Postal',
-        'Reprezentantul_fiscal_al_vanzatorului_Adresa_Subdiviziunea_tarii',
-        'Reprezentantul_fiscal_al_vanzatorului_Adresa_Tara',          
-        'Reprezentantul_fiscal_al_vanzatorului_Adresa_Informatii_suplimentare_adresa',
-        'Reprezentantul_fiscal_al_vanzatorului_Identificatorul_de_TVA',
-
-        'Informatii_referitoare_la_livrare_Data_reala_a_livrarii',           
-        'Informatii_referitoare_la_livrare_Numele_partii_catre_care_se_face_livrarea',                                            
-        'Informatii_referitoare_la_livrare_Locatie_Identificatorul_locului',        
-        'Informatii_referitoare_la_livrare_Locatie_Identificatorul_schemei',                     
-        'Informatii_referitoare_la_livrare_Locatie_Adresa_Strada',        
-        'Informatii_referitoare_la_livrare_Locatie_Adresa_Informatii_suplimentare_strada',        
-        'Informatii_referitoare_la_livrare_Locatie_Adresa_Informatii_suplimentare_adresa',        
-        'Informatii_referitoare_la_livrare_Locatie_Adresa_Oras',        
-        'Informatii_referitoare_la_livrare_Locatie_Adresa_Cod_Postal',        
-        'Informatii_referitoare_la_livrare_Locatie_Adresa_Subdiviziunea_tarii',        
-        'Informatii_referitoare_la_livrare_Locatie_Adresa_Tara',
-
-        'Instructiuni_de_plata_Codul_tipului_instrumentului_de_plata',
-        'Instructiuni_de_plata_Nota_privind_instrumentul_de_plata',
-        'Instructiuni_de_plata_Aviz_de_plata',
-        'Instructiuni_de_plata_Numarul_contului_principal_al_cardului_de_plata',
-        'Instructiuni_de_plata_Numele_detinatorului_cardului_de_plata',
-        'Instructiuni_de_plata_Identificatorul_contului_de_plata',
-        'Instructiuni_de_plata_Numele_contului_de_plata',
-        'Instructiuni_de_plata_Identificatorul_furnizorului_de_servicii_de_plata',
-        'Instructiuni_de_plata_Debitare_directa_Identificatorul_referintei_mandatului',
-        'Instructiuni_de_plata_Debitare_directa_Identificatorul_contului_debitat',
-
         'Termeni_de_plata_Nota',
-
-        'Taxarea_suplimentara_Codul_motivului',
-        'Taxarea_suplimentara_Motivul',
-        'Taxarea_suplimentara_Procent',                
-        'Taxarea_suplimentara_Valoare',
-        'Taxarea_suplimentara_Codul_monedei_RON',
-        'Taxarea_suplimentara_Valoarea_de_baza',
-        'Taxarea_suplimentara_Codul_categoriei_de_TVA',
-        'Taxarea_suplimentara_Cota_de_TVA',
-        'Taxarea_suplimentara_Identificatorul_schemei_VAT',
-
-
-        'Deducere_Codul_motivului',
-        'Deducere_Motivul',
-        'Deducere_Procent',        
-        'Deducere_Valoare',
-        'Deducere_Codul_monedei_RON',
-        'Deducere_Valoarea_de_baza',
-        'Deducere_Codul_categoriei_de_TVA',
-        'Deducere_Cota_de_TVA',
-        'Deducere_Identificatorul_schemei_VAT',
-
 
         'Totalurile_documentului_Suma_valorilor_nete_ale_liniilor_facturii',
         'Totalurile_documentului_Suma_valorilor_nete_ale_liniilor_facturii_Codul_monedei',
@@ -168,8 +107,33 @@ class EfacturaInvoice extends Model
         return $this->belongsTo(EfacturaPathInvoice::class, 'invoice_path_id', 'id');
     }
 
+    // note factura
     public function EfacturaInvoiceComments() {
         return $this->hasMany(EfacturaInvoiceComments::class, 'invoice_id', 'id');
+    }
+    // livrare
+    public function EfacturaInvoiceDelivery() {
+        return $this->hasOne(EfacturaInvoiceDelivery::class, 'invoice_id', 'id');
+    }
+
+    // instructiuni de plata
+    public function EfacturaInvoicePaymentMeans() {
+        return $this->hasOne(EfacturaInvoicePaymentMeans::class, 'invoice_id', 'id');
+    }
+
+    // beneficiar
+    public function EfacturaInvoicePayeeParty() {
+        return $this->hasOne(EfacturaInvoicePayeeParty::class, 'invoice_id', 'id');
+    }
+
+    // reprezentantul fiscal al vanzatorului
+    public function EfacturaInvoiceTaxRepresentativeParty() {
+        return $this->hasOne(EfacturaInvoiceTaxRepresentativeParty::class, 'invoice_id', 'id');
+    }
+
+    // reprezentantul fiscal al vanzatorului
+    public function EfacturaInvoiceAllowanceCharge() {
+        return $this->hasMany(EfacturaInvoiceAllowanceCharge::class, 'invoice_id', 'id');
     }
 
     public function EfacturaInvoiceTaxDetails() {
@@ -180,9 +144,7 @@ class EfacturaInvoice extends Model
         return $this->hasMany(EfacturaInvoiceLine::class, 'invoice_id', 'id');
     }
 
-    public function TipInstrumentPlata() {
-        return $this->hasOne(Nomenclatoare\TipInstrumentPlata::class, 'cod', 'Instructiuni_de_plata_Codul_tipului_instrumentului_de_plata');
-    }
+
     
 }
 

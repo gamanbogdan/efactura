@@ -28,7 +28,6 @@ Route::get('/admin/dashboard', [ProfileController::class, 'dashboard'])->name('d
 Route::get('/admin/logout', [ProfileController::class, 'logout'])->name('logout');
 
 Route::get('/admin/efactura', [EfacturaController::class, 'index'])->name('efactura.index');
-Route::get('/admin/efacturaa', [EfacturaController::class, 'indexx'])->name('efactura.indexx');
 Route::get('/admin/efactura/{factura}', [EfacturaController::class, 'show'])->name('efactura.show');
 
 Route::put('/admin/efactura/{factura}', [EfacturaController::class, 'update'])->name('efactura.update');

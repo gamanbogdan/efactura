@@ -16,14 +16,14 @@ return new class extends Migration
             $table->unsignedBigInteger('file_upload_id')->unsigned(); 
             
             
-            $table->string('xml_name')->nullable(); 
+            $table->unsignedBigInteger('xml_name')->unsigned(); 
             $table->string('xml_path')->nullable();
             $table->integer('time')->unsigined();
             $table->date('date_created_anaf');
             $table->string('created_at_anaf')->nullable();
             $table->timestamps();
 
-
+            $table->index(['xml_name']);
             $table->foreign('file_upload_id')->references('id')->on('efactura_path_zip')->onDelete('cascade');
         });
     }
