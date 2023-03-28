@@ -12,9 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('efactura_invoice_line', function (Blueprint $table) {
-            
+
             $table->id();
-            $table->unsignedBigInteger('invoice_id')->unsigned(); 
+            $table->unsignedBigInteger('invoice_id')->unsigned();
 
 
             $table->string('Nume_articol')->nullable();
@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('Cantitate_facturata')->nullable();
             $table->char('UM')->nullable();
             $table->char('Codul_categoriei_de_TVA')->nullable();
-            $table->string('Cota_de_TVA')->nullable(); 
+            $table->string('Cota_de_TVA')->nullable();
             $table->string('Valoarea_neta_a_liniei')->nullable();
 
             $table->string('Informatii_suplimentare_Descriere_articol')->nullable();
@@ -41,34 +41,34 @@ return new class extends Migration
             $table->string('Informatii_suplimentare_Identificatorul_standard_al_articolului')->nullable();
             $table->string('Informatii_suplimentare_Identificatorul_standard_al_articolului_Identificatorul_schemei')->nullable();
 
-            
+
 
             $table->string('Atributul_articolului_Numele_atributului_articolului')->nullable();
-            $table->string('Atributul_articolului_Valoarea_atributului')->nullable();       
-            
-            
-            $table->string('Taxa_suplimentara_Codul_motivului_taxei_suplimentare')->nullable(); 
-            $table->string('Taxa_suplimentara_Motiv_taxa_suplimentara')->nullable(); 
-            $table->string('Taxa_suplimentara_Procentajul_taxei_suplimentare')->nullable(); 
-            $table->string('Taxa_suplimentara_Valoarea_taxei_suplimentare')->nullable(); 
-            $table->string('Taxa_suplimentara_Valoarea_de_baza_a_taxei_suplimentare')->nullable(); 
+            $table->string('Atributul_articolului_Valoarea_atributului')->nullable();
 
 
-            $table->string('Deducere_Codul_motivului_deducerii')->nullable(); 
-            $table->string('Deducere_Motiv_deducere')->nullable(); 
-            $table->string('Deducere_Procentajul_deducerii')->nullable(); 
-            $table->string('Deducere_Valoarea_deducerii')->nullable(); 
-            $table->string('Deducere_Valoarea_de_baza_a_deducerii')->nullable(); 
+            $table->string('Taxa_suplimentara_Codul_motivului_taxei_suplimentare')->nullable();
+            $table->string('Taxa_suplimentara_Motiv_taxa_suplimentara')->nullable();
+            $table->string('Taxa_suplimentara_Procentajul_taxei_suplimentare')->nullable();
+            $table->string('Taxa_suplimentara_Valoarea_taxei_suplimentare')->nullable();
+            $table->string('Taxa_suplimentara_Valoarea_de_baza_a_taxei_suplimentare')->nullable();
 
 
-            $table->string('Deduceri_Reducere_taxa_suplimentara_la_pretul_articolului')->nullable(); 
-            $table->string('Deduceri_Pretul_brut_al_articolului')->nullable(); 
+            $table->string('Deducere_Codul_motivului_deducerii')->nullable();
+            $table->string('Deducere_Motiv_deducere')->nullable();
+            $table->string('Deducere_Procentajul_deducerii')->nullable();
+            $table->string('Deducere_Valoarea_deducerii')->nullable();
+            $table->string('Deducere_Valoarea_de_baza_a_deducerii')->nullable();
+
+
+            $table->string('Deduceri_Reducere_taxa_suplimentara_la_pretul_articolului')->nullable();
+            $table->string('Deduceri_Pretul_brut_al_articolului')->nullable();
 
 
             $table->timestamps();
 
             $table->foreign('invoice_id')->references('id')->on('efactura_invoice')->onDelete('cascade');
-            $table->foreign('Codul_categoriei_de_TVA')->references('cod')->on('efactura_nomenclator_cod_categorie_tva');
+            //$table->foreign('Codul_categoriei_de_TVA')->references('cod')->on('efactura_nomenclator_cod_categorie_tva');
         });
     }
 

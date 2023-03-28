@@ -14,10 +14,10 @@ class EfacturaInvoice extends Model
     protected $fillable = [
         'invoice_path_id',
         'created_anaf',
-        'Informatii_factura_Nr_factura',  
-        'Informatii_factura_Data_emitere_factura', 
+        'Informatii_factura_Nr_factura',
+        'Informatii_factura_Data_emitere_factura',
         'Informatii_factura_Data_scadenta_factura',
-        'Informatii_factura_Codul_monedei_facturii', 
+        'Informatii_factura_Codul_monedei_facturii',
         'Informatii_factura_Codul_monedei_de_contabilizare_a_TVA',
         'Informatii_factura_Data_de_exigibilitate_a_TVA',
         'Informatii_factura_Data_de_inceput_a_perioadei_de_facturare',
@@ -30,13 +30,13 @@ class EfacturaInvoice extends Model
         'Informatii_factura_Referinta_avizului_de_expeditie',
         'Informatii_factura_Referinta_avizului_de_receptie',
         'Informatii_factura_Referinta_cererii_de_oferta_sau_a_lotului',
-        'Informatii_factura_Referinta_contractului', 
+        'Informatii_factura_Referinta_contractului',
         'Informatii_factura_Referinta_proiectului',
 
         'Vanzator_Adresa_electronica',
         'Vanzator_Adresa_electronica_Identificatorul_schemei',
         'Vanzator_Persoana_de_contact',
-        'Vanzator_Telefon_persoana_de_contact',        
+        'Vanzator_Telefon_persoana_de_contact',
         'Vanzator_E-mail_persoana_de_contact',
         'Vanzator_Identificator',
         'Vanzator_Identificator_Identificatorul_schemei',
@@ -45,13 +45,13 @@ class EfacturaInvoice extends Model
         'Vanzator_Adresa_Informatii_suplimentare_strada',
         'Vanzator_Adresa_Oras',
         'Vanzator_Adresa_Cod_Postal',
-        'Vanzator_Adresa_Subdiviziunea',
+        'Vanzator_Adresa_Subdiviziunea_tarii',
         'Vanzator_Adresa_Tara',
         'Vanzator_Adresa_Informatii_suplimentare_adresa',
         'Vanzator_Identificatorul_de_TVA',
         'Vanzator_Nume',
         'Vanzator_Identificatorul_de_inregistrare_legala',
-        'Vanzator_Identificatorul_de_inregistrare_legala_Identificatorul_schemei',        
+        'Vanzator_Identificatorul_de_inregistrare_legala_Identificatorul_schemei',
         'Vanzator_Informatii_juridice_suplimentare',
 
         'Cumparator_Adresa_electronica',
@@ -90,7 +90,7 @@ class EfacturaInvoice extends Model
         'Totalurile_documentului_Suma_platita_Codul_monedei',
         'Totalurile_documentului_Valoare_de_rotunjire',
         'Totalurile_documentului_Valoare_de_rotunjire_Codul_monedei',
-        'Totalurile_documentului_Suma_de_plata', 
+        'Totalurile_documentului_Suma_de_plata',
         'Totalurile_documentului_Suma_de_plata_Codul_monedei',
 
         'Totaluri_tva_Valoarea_totala_a_TVA_a_facturii',
@@ -118,7 +118,7 @@ class EfacturaInvoice extends Model
 
     // instructiuni de plata
     public function EfacturaInvoicePaymentMeans() {
-        return $this->hasOne(EfacturaInvoicePaymentMeans::class, 'invoice_id', 'id');
+        return $this->hasMany(EfacturaInvoicePaymentMeans::class, 'invoice_id', 'id');
     }
 
     // beneficiar
@@ -139,12 +139,12 @@ class EfacturaInvoice extends Model
     public function EfacturaInvoiceTaxDetails() {
         return $this->hasMany(EfacturaInvoiceTaxDetails::class, 'invoice_id', 'id');
     }
-    
+
     public function EfacturaInvoiceLine() {
         return $this->hasMany(EfacturaInvoiceLine::class, 'invoice_id', 'id');
     }
 
 
-    
+
 }
 

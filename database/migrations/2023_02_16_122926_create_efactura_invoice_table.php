@@ -15,7 +15,7 @@ return new class extends Migration
 
             $table->id();
 
-            $table->unsignedBigInteger('invoice_path_id')->unsigned(); 
+            $table->unsignedBigInteger('invoice_path_id')->unsigned();
 
             $table->date('created_anaf');
             ///////////////////////////////////////////////
@@ -48,7 +48,7 @@ return new class extends Migration
 
             // BT-19 Referinta cumparatorului
             $table->string('Informatii_factura_Referinta_cumparatorului')->nullable();
-        
+
             //BT-13 Referinta comenzii
             $table->string('Informatii_factura_Referinta_comenzii')->nullable();
 
@@ -57,7 +57,7 @@ return new class extends Migration
 
             //BT-25 Referinta la o factura anterioara:
             $table->string('Informatii_factura_Referinta_la_o_factura_anterioara')->nullable();
-            
+
             //BT-26 Data de emitere a facturii anterioare:
             $table->string('Informatii_factura_Data_de_emitere_a_facturii_anterioare')->nullable();
 
@@ -73,7 +73,7 @@ return new class extends Migration
             //BT-12 Referinta contractului
             $table->string('Informatii_factura_Referinta_contractului')->nullable();
 
-            //BT-11 Referinta proiectului    
+            //BT-11 Referinta proiectului
             $table->string('Informatii_factura_Referinta_proiectului')->nullable();
 
 
@@ -126,7 +126,7 @@ return new class extends Migration
             $table->string('Vanzator_Adresa_Cod_Postal')->nullable();
 
             //BT-39 Subdiviziunea
-            $table->string('Vanzator_Adresa_Subdiviziunea')->nullable();
+            $table->string('Vanzator_Adresa_Subdiviziunea_tarii')->nullable();
 
             //BT-40 Tara
             $table->string('Vanzator_Adresa_Tara')->nullable();
@@ -216,11 +216,11 @@ return new class extends Migration
 
 
 
-             
 
 
 
-            
+
+
 
             //////////////////////////////////////////////////
             //////////// TERMENI DE PLATA ////////////////////
@@ -229,7 +229,7 @@ return new class extends Migration
             $table->text('Termeni_de_plata_Nota')->nullable();
 
 
- 
+
 
 
 
@@ -280,11 +280,11 @@ return new class extends Migration
             $table->string('Totalurile_documentului_Valoare_de_rotunjire_Codul_monedei')->nullable();
 
             //BT-115 Suma de plata
-            $table->string('Totalurile_documentului_Suma_de_plata')->nullable(); 
+            $table->string('Totalurile_documentului_Suma_de_plata')->nullable();
 
             //Codul monedei
             $table->string('Totalurile_documentului_Suma_de_plata_Codul_monedei')->nullable();
-            
+
 
 
             //////////////////////////////////////////////////
@@ -292,24 +292,24 @@ return new class extends Migration
             //////////////////////////////////////////////////
             //BT-110 Valoarea totala a TVA a facturii
             $table->string('Totaluri_tva_Valoarea_totala_a_TVA_a_facturii')->nullable();
-           
+
             // BT-111
             $table->string('Totaluri_tva_Codul_monedei')->nullable();
 
 
             /////////////////////////////////////////////////
             // FCN REMARKS //////////////////////////////////
-            ///////////////////////////////////////////////// 
-                    
-            $table->boolean('is_fcn')->nullable()->default(null); 
+            /////////////////////////////////////////////////
+
+            $table->boolean('is_fcn')->nullable()->default(null);
             $table->string('comment_fcn')->nullable();
 
             $table->timestamps();
 
             $table->foreign('invoice_path_id')->references('id')->on('efactura_path_invoice')->onDelete('cascade');
-            
+
             $table->index(['created_anaf']);
-        
+
         });
     }
 
